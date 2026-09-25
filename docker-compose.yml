@@ -1,0 +1,18 @@
+services:
+  mimo-web-api:
+    build: .
+    container_name: mimo-web-api
+    ports:
+      - "${PORT:-8000}:8000"
+    env_file:
+      - .env
+    environment:
+      - PORT=8000
+    volumes:
+      - ./data:/app/data   # AT/RT 会话缓存持久化（容器重启不丢会话）
+    restart: unless-stopped
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "3"

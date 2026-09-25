@@ -1,0 +1,22 @@
+{
+  "name": "mimo-web-api",
+  "version": "1.0.0",
+  "description": "将小米 MiMo Studio 网页端逆向封装为 OpenAI 兼容 API 的反代服务（参考 deepseek-free-api / grok2api 模式）",
+  "type": "module",
+  "main": "src/server.js",
+  "scripts": {
+    "start": "node src/server.js",
+    "dev": "node --watch src/server.js"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "keywords": [
+    "mimo",
+    "xiaomi",
+    "openai",
+    "chat2api",
+    "reverse-proxy"
+  ],
+  "license": "MIT"
+}
