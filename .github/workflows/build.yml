@@ -1,0 +1,48 @@
+name: Build
+
+# 每次 push 自动构建单文件产物 dist/mimo-web-api.mjs 并提交回仓库
+on:
+  push:
+    branches: [main]
+    paths:
+      - "src/**"
+      - ".github/workflows/build.yml"
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: 构建（esbuild 单文件打包）
+        run: npx --yes esbuild@0.24.0 src/server.js --bundle --platform=node --format=esm --charset=ascii --outfile=dist/mimo-web-api.mjs
+
+      - name: 冒烟测试（服务可启动）
+        run: |
+          node -e "
+            import('./dist/mimo-web-api.mjs').then(() => {
+              console.log('bundle 可加载');
+              setTimeout(() => process.exit(0), 500);
+            }).catch((e) => { console.error(e); process.exit(1); });
+          "
+
+      - name: 提交编译产物
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add dist/mimo-web-api.mjs
+          if git diff --cached --quiet; then
+            echo "产物无变化，跳过提交"
+          else
+            git commit -m "build: 更新编译产物 dist/mimo-web-api.mjs"
+            git push
+          fi
